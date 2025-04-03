@@ -1,4 +1,3 @@
 print('jodjdbsdfo')
 print('holaaa')
-class Sistema:
-  
+print ('adios')
