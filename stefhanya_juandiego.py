@@ -1,4 +1,4 @@
-
+#punto 1
 datos_pacientes = [{'Nombre': 'Maria', 'Edad': 58, 'Sexo': 'M', 'Presion Arterial': '107/82 mmHg', 'Frecuencia Cardiaca': 67, 'Peso': 59.5, 'Altura': 1.51, 'Diabetes': False, 'Hipertension': False},
  {'Nombre': 'Juan', 'Edad': 72, 'Sexo': 'H', 'Presion Arterial': '130/88 mmHg', 'Frecuencia Cardiaca': 78, 'Peso': 75.2, 'Altura': 1.73, 'Diabetes': True, 'Hipertension': False},
  {'Nombre': 'Ana', 'Edad': 45, 'Sexo': 'M', 'Presion Arterial': '110/75 mmHg', 'Frecuencia Cardiaca': 55, 'Peso': 50.8, 'Altura': 1.6, 'Diabetes': False, 'Hipertension': True},
