@@ -294,5 +294,6 @@ Opción: '''))
         except ValueError:
             print("Entrada no válida. Intenta de nuevo con números.")
 
+
 if __name__ == "__main__":
     main()
