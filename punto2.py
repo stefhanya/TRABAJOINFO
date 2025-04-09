@@ -87,6 +87,7 @@ class Mascota:
         self.__edad = 0
         self.__propietario = ''
         self.__telefono = 0
+        self.historias = [] 
 
     def generar_codigo(self, letra):
         numero = random.randint(0, 99999)
@@ -124,6 +125,24 @@ class Mascota:
     def asignar_telefono(self, telefono):
         self.__telefono = telefono
 
+    def agregar_historia(self, historia):
+        self.historias.append(historia)
+
+    def eliminar_historia(self, id_historia):
+        nuevas_historias = []
+        for h in self.historias:
+            if h.IDHistoria != id_historia:
+                nuevas_historias.append(h)
+        self.historias = nuevas_historias
+
+    def mostrar_historias(self):
+        if not self.historias:
+            print("No hay historias registradas.")
+        else:
+            for h in self.historias:
+                print(h)
+
+
     def __str__(self):
         return (
             f"ID Mascota: {self.ver_IDMascota()}\n"
@@ -138,90 +157,63 @@ class Mascota:
 class Veterinaria:
     
     def __init__(self):
-        self.sistema=sistema
-        
-    def agregar_mascota(self, mascota):
-        id_m = mascota.ver_IDMascota()  
-        datosm = [
-            mascota.ver_nombre(),
-            mascota.ver_tipo(),
-            mascota.ver_edad(),
-            mascota.ver_raza(),
-            mascota.ver_propietario(),
-            mascota.ver_telefono()
-        ]
-        self.sistema[id_m] = [datosm,[]]
-    
-    def eliminarMascota(self, idm):
-        if idm in self.sistema:
-            del self.sistema[idm]  # línea correcta
-            return True
-        else: 
-            return False
+        self.mascotas = {}  # IDMascota : objeto Mascota
 
-    def agregar_historia(self, historia):
-        id_m = historia.ver_IDMascota()
-        if id_m not in self.sistema:
-            print("No existe una mascota con ese ID.")
-            return
-        datosh= [
-            historia.ver_IDHistoria(),
-            historia.ver_fecha(),
-            historia.ver_descrip(),
-            historia.ver_veterinario()
-        ]
-        self.sistema[id_m][1].append(datosh)
+    def registrar_mascota(self, nombre, tipo, edad, raza, propietario, telefono):
+        nueva = Mascota(nombre, tipo, edad, raza, propietario, telefono)
+        self.mascotas[nueva.IDMascota] = nueva
+        print(f"Mascota registrada con ID {nueva.IDMascota}")
+        return nueva.IDMascota
 
-    def eliminar_historia(self, id_historia):
-        for id_mascota, datos in self.sistema.items():
-            historias = datos[1]
-            for h in historias:
-                if h[0] == id_historia:
-                    historias.remove(h)
-                    print(f"\nHistoria {id_historia} eliminada de la mascota {id_mascota}.")
-                    return True
-        print("No se encontró una historia con ese ID.")
-        return False
-    def mostrar_historias_mascota(self, IDMascota):
-        if IDMascota not in self.sistema:
-            print("Mascota no encontrada.")
+    def eliminar_mascota(self, id_mascota):
+        if id_mascota in self.mascotas:
+            del self.mascotas[id_mascota]
+            print("Mascota eliminada.")
         else:
-            historias = self.sistema[IDMascota][1]
-            if not historias:
-                print("Esta mascota no tiene historias registradas.")
-            else:
-                print(f"\n Historias clínicas de la mascota {IDMascota}:")
-                for h in historias:
-                    print(f"- ID: {h[0]}, Fecha: {h[1]}, Descripción: {h[2]}, Veterinario: {h[3]}")
+            print("Mascota no encontrada.")
+
+    def agregar_historia(self, id_mascota, fecha, descripcion, veterinario):
+        if id_mascota in self.mascotas:
+            historia = Historia(fecha, descripcion, veterinario)
+            self.mascotas[id_mascota].agregar_historia(historia)
+            print(f"Historia agregada a la mascota {id_mascota}.")
+        else:
+            print("Mascota no encontrada.")
+
+    def mostrar_historias(self, id_mascota):
+        if id_mascota in self.mascotas:
+            print(f"Historias de {self.mascotas[id_mascota].nombre}:")
+            self.mascotas[id_mascota].mostrar_historias()
+        else:
+            print("Mascota no encontrada.")
+
+    def mostrar_mascotas(self):
+        if not self.mascotas:
+            print("No hay mascotas registradas.")
+        else:
+            for mascota in self.mascotas.values():
+                print(mascota)
 
     def __str__(self):
-        if not self.sistema:
-            return "No hay mascotas registradas en el sistema."
+        if not self.mascotas:
+            return "No hay mascotas registradas en la veterinaria."
 
-        salida = "\n Mascotas registradas con sus historias:\n"
-        for id_mascota, datos in self.sistema.items():
-            datos_mascota = datos[0]
-            historias = datos[1]
+        resultado = "\n-----Registro de la Veterinaria-----\n"
+        for mascota in self.mascotas.values():
+            resultado += f"\n{mascota}\n"
 
-            salida += f"\n ID: {id_mascota}\n"
-            salida += f"   Nombre: {datos_mascota[0]}\n"
-            salida += f"   Tipo: {datos_mascota[1]}\n"
-            salida += f"   Edad: {datos_mascota[2]} años\n"
-            salida += f"   Raza: {datos_mascota[3]}\n"
-            salida += f"   Propietario: {datos_mascota[4]}\n"
-            salida += f"   Teléfono: {datos_mascota[5]}\n"
-
-            if historias:
-                salida += f"   Historias clínicas:\n"
-                for h in historias:
-                    salida += f"      - ID: {h[0]}, Fecha: {h[1]}, Descripción: {h[2]}, Veterinario: {h[3]}\n"
+            if mascota.historias:
+                resultado += f"  Historias clínicas:\n"
+                for historia in mascota.historias:
+                    resultado += f"    - {historia}\n"
             else:
-                salida += "    Sin historias registradas.\n"
+                resultado += "  Sin historias clínicas registradas.\n"
+        return resultado
 
-        return salida
 
 def main():
     servicio = Veterinaria()
+    m = Mascota()
 
     while True:
         try:
@@ -236,51 +228,66 @@ def main():
 Opción: '''))
 
             if opcion == 1:
-                m = Mascota()
+                
                 m.asignar_nombre(input("Nombre de la mascota: "))
-                m.asignar_tipo(input("Tipo (Perro/Gato): "))
+                m.asignar_tipo(input("Tipo: "))
                 m.asignar_raza(input("Raza: "))
                 m.asignar_edad(int(input("Edad: ")))
                 m.asignar_propietario(input("Nombre del propietario: "))
                 m.asignar_telefono(int(input("Teléfono: ")))
 
-                servicio.agregar_mascota(m)
-                print("\nMascota registrada con éxito:")
+                servicio.mascotas[m.ver_IDMascota()] = m
+                print(f"\nMascota registrada con ID {m.ver_IDMascota()}")
                 print(m)
 
             elif opcion == 2:
                 id_m = input("Ingrese el ID de la mascota a eliminar: ")
-                if servicio.eliminarMascota(id_m):
-                    print("Mascota eliminada correctamente.")
+                if id_m==m.ver_IDMascota in servicio:
+                    servicio.eliminar_mascota(id_m)
+                    print ('Mascota eliminada del sistema')
+                else: 
+                    print('Mascota no encontrada')
+
+            elif opcion == 3:
+                id_m = input("Ingrese el ID de la mascota para ingresar historia: ")
+                if id_m in servicio.mascotas:
+                    h = Historia()
+                    h.asignar_IDMascota(id_m)
+
+                    fecha = input("Ingrese la fecha (dd/mm/aaaa): ")
+                    while not h.validarFecha(fecha):
+                        fecha = input("Fecha inválida. Ingrese la fecha (dd/mm/aaaa): ")
+                    h.asignar_fecha(fecha)
+
+                    h.asignar_descrip(input("Descripción de la consulta: "))
+                    h.asignar_veterinario(input("Nombre del veterinario: "))
+
+                    servicio.mascotas[id_m].agregar_historia(h)
+                    print("\nHistoria registrada con éxito:")
+                    print(h)
                 else:
                     print("Mascota no encontrada.")
 
-            elif opcion == 3:
-                h = Historia()
-                id_mascota = input("Ingrese el ID de la mascota: ")
-                h.asignar_IDMascota(id_mascota)
-
-                fecha = input("Ingrese la fecha (dd/mm/aaaa): ")
-                while not h.validarFecha(fecha):
-                    fecha = input("Formato incorrecto. Ingrese la fecha (dd/mm/aaaa): ")
-                h.asignar_fecha(fecha)
-
-                h.asignar_descrip(input("Descripción: "))
-                h.asignar_veterinario(input("Veterinario: "))
-                servicio.agregar_historia(h)
-                print("\nHistoria registrada con éxito:")
-                print(h)
-
             elif opcion == 4:
-                id_h = input("Ingrese el ID de la historia a eliminar: ")
-                if servicio.eliminar_historia(id_h):
-                    print("Historia eliminada correctamente.")
+                id_m = input("Ingrese el ID de la mascota: ")
+                if id_m in servicio.mascotas:
+                    id_h = input("Ingrese el ID de la historia a eliminar: ")
+                    mascota = servicio.mascotas[id_m]
+                    original = len(mascota.historias)
+                    mascota.historias = [h for h in mascota.historias if h.ver_IDHistoria() != id_h]
+                    if len(mascota.historias) < original:
+                        print("Historia eliminada correctamente.")
+                    else:
+                        print("Historia no encontrada.")
                 else:
-                    print("Historia no encontrada.")
+                    print("Mascota no encontrada.")
 
             elif opcion == 5:
                 id_m = input("Ingrese el ID de la mascota: ")
-                servicio.mostrar_historias_mascota(id_m)
+                if id_m in servicio.mascotas:
+                    servicio.mascotas[id_m].mostrar_historias()
+                else:
+                    print("Mascota no encontrada.")
 
             elif opcion == 6:
                 print(servicio)
@@ -288,11 +295,12 @@ Opción: '''))
             elif opcion == 7:
                 print("Saliendo del sistema. ¡Hasta pronto!")
                 break
+
             else:
-                print("Opción no válida. Intenta de nuevo.")
-            
+                print("Opción no válida. Intente de nuevo.")
+
         except ValueError:
-            print("Entrada no válida. Intenta de nuevo con números.")
+            print("Entrada inválida. Por favor, ingrese un número.")
 
 if __name__ == "__main__":
     main()
